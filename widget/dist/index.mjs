@@ -1,5 +1,6 @@
 // src/index.tsx
-import { useEffect, useMemo } from "react";
+import * as React from "react";
+import { useEffect } from "react";
 
 // node_modules/d3-selection/src/namespaces.js
 var xhtml = "http://www.w3.org/1999/xhtml";
@@ -7304,21 +7305,25 @@ var defaultOptions = {
   width: 500,
   zoom: false
 };
-var counter = 0;
-var getId = () => `graphviz${counter++}`;
-var Graphviz2 = ({ dot, className, options = {} }) => {
-  const id2 = useMemo(getId, []);
+var Graphviz2 = ({ dot, options = {} }) => {
+  const [error, setError] = React.useState(null);
   useEffect(() => {
-    graphviz(`#${id2}`, {
+    setError(null);
+    graphviz(`#coolgraph`, {
       ...defaultOptions,
       ...options
-    }).renderDot(dot);
+    }).renderDot(dot).onerror((e2) => {
+      setError(e2);
+    });
   }, [dot, options]);
-  return /* @__PURE__ */ jsx("div", { className, id: id2 });
+  if (error) {
+    return /* @__PURE__ */ jsx("div", { id: "coolgraph", children: error });
+  }
+  return /* @__PURE__ */ jsx("div", { id: "coolgraph" });
 };
 var src_default = (props) => {
   const { dot } = props;
-  return Graphviz2({ dot, className: "graph" });
+  return Graphviz2({ dot });
 };
 export {
   src_default as default

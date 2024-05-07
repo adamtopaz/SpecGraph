@@ -32,5 +32,5 @@ def specGraph : CoreM (HashSet (Name × Name)) := do
     let some c := env.find? a | continue
     for b in names do
       if c.getUsedConstantsAsSet.contains b then
-        graph := graph.insert (a,b)
+        graph := graph.insert (b,a)
   return graph

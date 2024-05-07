@@ -3,19 +3,9 @@ import { useEffect, useMemo } from 'react';
 import { graphviz, GraphvizOptions } from 'd3-graphviz';
 
 interface IGraphvizProps {
-  /**
-   * A string containing a graph representation using the Graphviz DOT language.
-   * @see https://graphviz.org/doc/info/lang.html
-   */
   dot: string;
-  /**
-   * Options to pass to the Graphviz renderer.
-   */
   options?: GraphvizOptions;
-  /**
-   * The classname to attach to this component for styling purposes.
-   */
-  className?: string;
+  //className?: string;
 }
 
 const defaultOptions: GraphvizOptions = {
@@ -25,24 +15,29 @@ const defaultOptions: GraphvizOptions = {
   zoom: false,
 };
 
-let counter = 0;
+// let counter = 0;
 
-// eslint-disable-next-line no-plusplus
+// const getId = () => `graphviz${counter++}`;
 
-const getId = () => `graphviz${counter++}`;
-
-const Graphviz = ({ dot, className, options = {} }: IGraphvizProps) => {
-  const id = useMemo(getId, []);
+const Graphviz = ({ dot, options = {} }: IGraphvizProps) => {
+  // const id = useMemo(getId, []);
+  const [error, setError] = React.useState<string | null>(null)
   useEffect(() => {
-    graphviz(`#${id}`, {
+    setError(null)
+    graphviz(`#coolgraph`, {
       ...defaultOptions,
       ...options,
-    }).renderDot(dot);
+    }).renderDot(dot).onerror((e) => {
+      setError(e)
+    });
   }, [dot, options]);
-  return <div className={className} id={id} />;
+  if (error) {
+    return <div id="coolgraph">{error}</div>
+  }
+  return <div id="coolgraph" />;
 };
 
 export default (props : any) => {
   const { dot } = props
-  return Graphviz({ dot : dot, className : "graph"})
+  return Graphviz({ dot : dot })
 };
