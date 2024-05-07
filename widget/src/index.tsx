@@ -43,5 +43,6 @@ const Graphviz = ({ dot, className, options = {} }: IGraphvizProps) => {
 };
 
 export default (props : any) => {
-  return Graphviz({ dot : "digraph  {a -> b}", className : "graph"})
+  const { dot } = props
+  return Graphviz({ dot : dot, className : "graph"})
 };

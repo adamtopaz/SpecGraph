@@ -7317,7 +7317,8 @@ var Graphviz2 = ({ dot, className, options = {} }) => {
   return /* @__PURE__ */ jsx("div", { className, id: id2 });
 };
 var src_default = (props) => {
-  return Graphviz2({ dot: "digraph  {a -> b}", className: "graph" });
+  const { dot } = props;
+  return Graphviz2({ dot, className: "graph" });
 };
 export {
   src_default as default
