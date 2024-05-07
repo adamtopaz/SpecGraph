@@ -1,4 +1,4 @@
-import Lean
+import SpecGraph.Types
 
 open Lean
 
@@ -24,13 +24,14 @@ def specAttrImpl : AttributeImpl where
 
 initialize registerBuiltinAttribute specAttrImpl
 
-def specGraph : CoreM (HashSet (Name × Name)) := do
+def specGraph : CoreM (HashGraph Name) := do
   let env ← getEnv
   let names := specEnvExt.getState env
-  let mut graph : HashSet (Name × Name) := {}
+  let mut graph : HashGraph Name := {}
   for a in names do
+    graph := graph.insertNode a
     let some c := env.find? a | continue
     for b in names do
       if c.getUsedConstantsAsSet.contains b then
-        graph := graph.insert (b,a)
+        graph := graph.insertEdge b a
   return graph

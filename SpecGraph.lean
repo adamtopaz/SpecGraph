@@ -4,19 +4,18 @@ import SpecGraph.Widget
 def a : Nat := 0
 
 @[spec_decl]
-theorem ha : a = 0 := rfl
-
-structure A where
-  b : Nat
-  hb : b = a
+def b : Nat := a
 
 @[spec_decl]
-def b : Nat := a + 2
+theorem hb : a = b := rfl
 
-structure B where
-  c : Nat
-  hc : c + a + b = 0
+@[spec_decl]
+def c (e : Nat) (he : e = a + b) : Nat := a + b + e
 
-attribute [spec_decl] A.hb B.hc
+@[spec_decl]
+theorem hh (e : Nat) (he : e = a + b) : c e he = a + b + e := rfl
+
+@[spec_decl]
+def ff : Nat := 0
 
 #spec_graph

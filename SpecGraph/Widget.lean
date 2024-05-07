@@ -20,12 +20,7 @@ def elabHtmlCmd : CommandElab := fun
   | stx@`(#spec_graph) =>
     runTermElabM fun _ => do
       let graph ← specGraph
-      let mut dot := "digraph {\n"
-      for (a,b) in graph do
-        dot := dot ++ s!"\"{a}\" -> \"{b}\";\n"
-      dot := dot ++ "}"
-      --let s : String := "digraph {ab -> Csd; abaa -> Csd; a -> asd;}"
-      let ht : Html := <SpecGraph dot={dot}/>
+      let ht : Html := <SpecGraph dot={graph.toDot}/>
       Widget.savePanelWidgetInfo (hash HtmlDisplayPanel.javascript)
         (return json% { html: $(← Server.rpcEncode ht) }) stx
   | stx => throwError "Unexpected syntax {stx}."
