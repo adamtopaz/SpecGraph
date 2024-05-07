@@ -1,25 +1,47 @@
-// @ts-nocheck
-import React, {useRef, useEffect} from 'react';
-import * as d3 from 'd3';
+import * as React from 'react';
+import { useEffect, useMemo } from 'react';
+import { graphviz, GraphvizOptions } from 'd3-graphviz';
+
+interface IGraphvizProps {
+  /**
+   * A string containing a graph representation using the Graphviz DOT language.
+   * @see https://graphviz.org/doc/info/lang.html
+   */
+  dot: string;
+  /**
+   * Options to pass to the Graphviz renderer.
+   */
+  options?: GraphvizOptions;
+  /**
+   * The classname to attach to this component for styling purposes.
+   */
+  className?: string;
+}
+
+const defaultOptions: GraphvizOptions = {
+  fit: true,
+  height: 500,
+  width: 500,
+  zoom: false,
+};
+
+let counter = 0;
+
+// eslint-disable-next-line no-plusplus
+
+const getId = () => `graphviz${counter++}`;
+
+const Graphviz = ({ dot, className, options = {} }: IGraphvizProps) => {
+  const id = useMemo(getId, []);
+  useEffect(() => {
+    graphviz(`#${id}`, {
+      ...defaultOptions,
+      ...options,
+    }).renderDot(dot);
+  }, [dot, options]);
+  return <div className={className} id={id} />;
+};
 
 export default (props : any) => {
-  const data =[1,2,3]
-  const gx = useRef();
-  const gy = useRef();
-  const x = d3.scaleLinear([0, data.length - 1], [5, 120 - 5]);
-  const y = d3.scaleLinear(d3.extent(data), [120 - 5, 5]);
-  const line = d3.line((d, i) => x(i), y);
-  useEffect(() => void d3.select(gx.current).call(d3.axisBottom(x)), [gx, x]);
-  useEffect(() => void d3.select(gy.current).call(d3.axisLeft(y)), [gy, y]);
-  return (
-    <svg width={120} height={120}>
-      <g ref={gx} transform={`translate(0,${120 - 5})`} />
-      <g ref={gy} transform={`translate(${5},0)`} />
-      <path fill="none" stroke="currentColor" strokeWidth="1.5" d={line(data)} />
-      <g fill="white" stroke="currentColor" strokeWidth="1.5">
-        {data.map((d, i) => (<circle key={i} cx={x(i)} cy={y(d)} r="2.5" />))}
-      </g>
-    </svg>
-  )
-
+  return Graphviz({ dot : "digraph  {a -> b}", className : "graph"})
 };
