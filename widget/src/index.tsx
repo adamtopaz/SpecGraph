@@ -2,7 +2,12 @@ import * as React from "react";
 import { useEffect } from "react";
 import * as d3 from 'd3';
 import { graphviz, GraphvizOptions } from 'd3-graphviz';
-import renderMathInElement, { RenderMathInElementOptions } from "katex/contrib/auto-render"
+import renderMathInElement from "katex/contrib/auto-render"
+
+// @ts-ignore
+import css from 'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css'
+
+//import css from 'katex/dist/katex.min.css'
 
 const defaultOptions: GraphvizOptions = {
   fit: true,
@@ -39,6 +44,28 @@ function mkDot({nodes, edges} : Graph) : string {
   return out + "\n}"
 }
 
+function KatexComponent({ text }: { text: string }) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (containerRef.current) {
+      // Directly set the innerHTML
+      containerRef.current.innerHTML = text;
+      // Render math within the element
+      renderMathInElement(containerRef.current, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\(', right: '\\)', display: false },
+          { left: '\\[', right: '\\]', display: true }
+        ],
+        throwOnError: false
+      });
+    }
+  }, [text]);
+
+  return <div ref={containerRef} />;
+}
+
 function mkGraph({nodes, edges} : Graph) {
   const nodeMap = new Map(nodes.map(node => [node.id, node]))
 
@@ -60,9 +87,20 @@ function mkGraph({nodes, edges} : Graph) {
             const nodeInfo = d3.select("#node-info")
             if (node) {
               nodeInfo.html('');
-              nodeInfo.append("p").text(`${node.name} : ${node.type}`);
+              nodeInfo.append("div").text(`${node.name} : ${node.type}`);
               if (node.docstring) {
-                nodeInfo.append("p").text(`${node.docstring}`);
+                nodeInfo.append("div").text(`${node.docstring}`).each(function() {
+                  const docNoe = d3.select(this);
+                  renderMathInElement(this, {
+                    delimiters: [
+                      { left: '$$', right: '$$', display: true },
+                      { left: '$', right: '$', display: false },
+                      { left: '\\(', right: '\\)', display: false },
+                      { left: '\\[', right: '\\]', display: true }
+                    ],
+                    throwOnError: false
+                  });
+                });
               }
             };
           });
@@ -85,5 +123,6 @@ function mkGraph({nodes, edges} : Graph) {
 }
 
 export default (graph : Graph) => {
+  document.adoptedStyleSheets = [css];
   return mkGraph(graph)
 };
