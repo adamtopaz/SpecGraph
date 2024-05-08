@@ -7,15 +7,11 @@ def a : Nat := 0
 def b : Nat := a
 
 @[spec_decl]
-theorem hb : a = b := rfl
+def c : Nat := a + b
+
+notation "ℕ" => Nat
 
 @[spec_decl]
-def c (e : Nat) (he : e = a + b) : Nat := a + b + e
-
-@[spec_decl]
-theorem hh (e : Nat) (he : e = a + b) : c e he = a + b + e := rfl
-
-@[spec_decl]
-def ff : Nat := 0
+def foo : ℕ → ℕ := fun x => x + a + b + c
 
 #spec_graph
