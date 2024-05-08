@@ -35,3 +35,17 @@ def specGraph : CoreM (HashGraph Name) := do
       if c.getUsedConstantsAsSet.contains b then
         graph := graph.insertEdge b a
   return graph
+
+def specGraphOf (nm : Name) (gas := 5) : CoreM (HashGraph Name) :=
+match gas with
+| 0 => return .mk (HashSet.empty.insert nm) {}
+| n+1 => do
+  let env ← getEnv
+  let specDecls := specEnvExt.getState env
+  let prev ← specGraphOf nm n
+  let mut out := prev
+  for decl in specDecls do
+    let some c := env.find? decl | continue
+    for p in prev.nodes do
+      if c.getUsedConstantsAsSet.contains p then out := out.insertEdge p decl
+  return out

@@ -15,4 +15,7 @@ which is just the sum of $a$ and $0$.
 @[spec_decl]
 def b := a + 0
 
-#spec_graph
+@[spec_decl]
+def c := b + a
+
+#spec_graph_of a
