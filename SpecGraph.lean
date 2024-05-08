@@ -14,12 +14,12 @@ notation "ℕ" => Nat
 @[spec_decl]
 def foo : ℕ → ℕ := fun x => x + a + b + c
 
-@[spec_decl]
-structure F where
-  x : Nat
-  ha : x = a
 
-@[spec_decl]
-theorem tt {f : F} : f.x = a := f.ha
+structure FF where
+  x : Nat
+  hx : x = a
+
+
+attribute [spec_decl] a b c foo FF.hx
 
 #spec_graph

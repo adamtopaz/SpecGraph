@@ -39,10 +39,10 @@ def elabHtmlCmd : CommandElab := fun
         let some c := env.find? n | continue
         let ppTp ← Meta.ppExpr c.type
         let docString? ← findDocString? env n
-        nodes := nodes.push { id := s!"{n}", name := n, type := s!"{ppTp}", docstring := docString? }
+        nodes := nodes.push { id := s!"{hash n}", name := n, type := s!"{ppTp}", docstring := docString? }
       let mut edges := #[]
       for (source, target) in graph.edges do
-        edges := edges.push { source := s!"{source}", target := s!"{target}" }
+        edges := edges.push { source := s!"{hash source}", target := s!"{hash target}" }
       let ht : Html := <SpecGraph nodes={nodes} edges={edges}/>
       Widget.savePanelWidgetInfo (hash HtmlDisplayPanel.javascript)
         (return json% { html: $(← Server.rpcEncode ht) }) stx

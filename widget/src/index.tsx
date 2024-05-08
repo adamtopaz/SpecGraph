@@ -1,9 +1,7 @@
 import * as React from "react";
-import ReactDOM from "react-dom";
 import { useEffect } from "react";
 import * as d3 from 'd3';
 import { graphviz, GraphvizOptions } from 'd3-graphviz';
-import katex from "katex";
 import renderMathInElement, { RenderMathInElementOptions } from "katex/contrib/auto-render"
 
 const defaultOptions: GraphvizOptions = {
@@ -17,7 +15,7 @@ interface Node {
   id : string;
   name : string;
   type : string;
-  docstring? : string;
+  docstring : string | null;
 }
 
 interface Edge {
@@ -33,34 +31,12 @@ interface Graph {
 function mkDot({nodes, edges} : Graph) : string {
   var out = "digraph {\n"
   nodes.forEach((e) => 
-    out += `  ${e.id} [label=\"${e.name}\", id=\"${e.id}\"];\n`
+    out += `  ${e.id} [label=\"${e.name}\", id=${e.id}];\n`
   );
   edges.forEach((e) => 
     out += `  ${e.source} -> ${e.target};\n`
   );
   return out + "\n}"
-}
-
-function KatexComponent({ text }: { text: string }) {
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (containerRef.current) {
-      // Directly set the innerHTML
-      containerRef.current.innerHTML = text;
-      // Render math within the element
-      renderMathInElement(containerRef.current, {
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '$', right: '$', display: false },
-          { left: '\\(', right: '\\)', display: false },
-          { left: '\\[', right: '\\]', display: true }
-        ],
-        throwOnError: false
-      });
-    }
-  }, [text]);
-
-  return <div ref={containerRef} />;
 }
 
 function mkGraph({nodes, edges} : Graph) {
@@ -88,9 +64,6 @@ function mkGraph({nodes, edges} : Graph) {
               if (node.docstring) {
                 nodeInfo.append("p").text(`${node.docstring}`);
               }
-              //const docstringDiv = nodeInfo.append("div").node() as HTMLDivElement;
-              //const root = ReactDOM.createRoot(docstringDiv);
-              //root.render(<KatexComponent text={node.docstring} />);
             };
           });
         });
@@ -106,24 +79,10 @@ function mkGraph({nodes, edges} : Graph) {
   return (
     <div className="App">
       <div id="graph"></div>
-      <br/>
-      <br/>
-      <br/>
       <div id="node-info">Node information will appear here.</div>
     </div>
   );
 }
-
-const nodes : Array<Node> = [
-  { id : "idA", name : "A", type : "tpA", docstring : "A is $A + B = C$" },
-  { id : "idB", name : "B", type : "tpB", docstring : "B" },
-  { id : "idC", name : "C", type : "tpC", docstring : "C" },
-]
-
-const edges : Array<Edge> = [
-  { source : "idA", target : "idB" },
-  { source : "idC", target : "idB" },
-]
 
 export default (graph : Graph) => {
   return mkGraph(graph)
