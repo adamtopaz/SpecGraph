@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import * as d3 from 'd3';
 import { graphviz, GraphvizOptions } from 'd3-graphviz';
 import renderMathInElement from "katex/contrib/auto-render"
-
 // @ts-ignore
 import css from 'https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css'
+
 
 //import css from 'katex/dist/katex.min.css'
 
