@@ -17,7 +17,7 @@ interface Node {
   id : string;
   name : string;
   type : string;
-  docstring : string;
+  docstring? : string;
 }
 
 interface Edge {
@@ -84,7 +84,10 @@ function mkGraph({nodes, edges} : Graph) {
             const nodeInfo = d3.select("#node-info")
             if (node) {
               nodeInfo.html('');
-              nodeInfo.append("div").text(`${node.name} : ${node.type}`);
+              nodeInfo.append("p").text(`${node.name} : ${node.type}`);
+              if (node.docstring) {
+                nodeInfo.append("p").text(`${node.docstring}`);
+              }
               //const docstringDiv = nodeInfo.append("div").node() as HTMLDivElement;
               //const root = ReactDOM.createRoot(docstringDiv);
               //root.render(<KatexComponent text={node.docstring} />);
@@ -93,7 +96,7 @@ function mkGraph({nodes, edges} : Graph) {
         });
 
         // Click handler for anywhere outside the graph.
-        d3.select(document).on("click", () => {
+        d3.select("#graph").on("click", () => {
           const nodeInfo = d3.select("#node-info")
           nodeInfo.html('');
           nodeInfo.text("Node information will appear here.");
@@ -103,6 +106,9 @@ function mkGraph({nodes, edges} : Graph) {
   return (
     <div className="App">
       <div id="graph"></div>
+      <br/>
+      <br/>
+      <br/>
       <div id="node-info">Node information will appear here.</div>
     </div>
   );

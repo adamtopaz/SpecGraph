@@ -21727,12 +21727,15 @@ function mkGraph({ nodes, edges }) {
           const nodeInfo = select_default2("#node-info");
           if (node) {
             nodeInfo.html("");
-            nodeInfo.append("div").text(`${node.name} : ${node.type}`);
+            nodeInfo.append("p").text(`${node.name} : ${node.type}`);
+            if (node.docstring) {
+              nodeInfo.append("p").text(`${node.docstring}`);
+            }
           }
           ;
         });
       });
-      select_default2(document).on("click", () => {
+      select_default2("#graph").on("click", () => {
         const nodeInfo = select_default2("#node-info");
         nodeInfo.html("");
         nodeInfo.text("Node information will appear here.");
@@ -21741,6 +21744,9 @@ function mkGraph({ nodes, edges }) {
   }, [nodes, edges]);
   return /* @__PURE__ */ jsxs("div", { className: "App", children: [
     /* @__PURE__ */ jsx("div", { id: "graph" }),
+    /* @__PURE__ */ jsx("br", {}),
+    /* @__PURE__ */ jsx("br", {}),
+    /* @__PURE__ */ jsx("br", {}),
     /* @__PURE__ */ jsx("div", { id: "node-info", children: "Node information will appear here." })
   ] });
 }
