@@ -7,8 +7,7 @@ open scoped ProofWidgets.Jsx
 structure Node where
   id : String
   name : Name
-  type : String
-  docstring : Option String
+  info : String
 deriving ToJson, FromJson, Inhabited
 
 def Node.usesSorry (node : Node) : CoreM Bool := do
@@ -35,11 +34,21 @@ def mkNodes (nodes : HashSet Name) : MetaM (Array Node) :=
   nodes.toArray.filterMapM fun nm => do
     let env ← getEnv
     let some c := env.find? nm | return none
+    let ppTp ← Meta.ppExpr c.type
+    let docString : String :=
+      match ← findDocString? env nm with
+      | none => ""
+      | some doc => s!"\n---\n{doc}\n---\n"
     return some {
       id := s!"{hash nm}",
-      name := nm,
-      type := (← Meta.ppExpr c.type).pretty
-      docstring := ← findDocString? env nm
+      name := nm
+      info := s!"\
+# {nm}
+```lean
+{nm} : {ppTp}
+```
+{docString}
+"
     }
 
 def mkDot (graph : HashGraph Name) : MetaM String := do

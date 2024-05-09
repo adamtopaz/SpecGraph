@@ -10,7 +10,7 @@ import css from 'katex/dist/katex.min.css';
 interface Node {
   id : string;
   name : string;
-  type : string;
+  info : string;
   docstring : string | null;
 }
 
@@ -45,23 +45,12 @@ function mkGraph({nodes, dot} : Graph) {
               if (typeDiv) {
                 const typeRoot = createRoot(typeDiv);
                 typeRoot.render(
-                  <Markdown>
-                    {`${node.name} : ${node.type}`}
+                  // @ts-ignore
+                  <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                    {node.info}
                   </Markdown>
                 )
               };
-              if (node.docstring) {
-                const docDiv = nodeInfo.append('div').node();
-                if (docDiv) {
-                  const docRoot = createRoot(docDiv);
-                  docRoot.render(
-                    // @ts-ignore
-                    <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                      {node.docstring}
-                    </Markdown>
-                  );
-                }
-              }
             };
 
           });

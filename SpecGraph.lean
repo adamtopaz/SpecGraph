@@ -47,10 +47,11 @@ def etalePi1 : PointedScheme.{u} → ProfiniteGroup.{u} := sorry
 def Scheme.IsHyperbolicCurve (X : Scheme.{u}) : Prop := sorry
 
 
+@[spec_decl]
 structure HyperbolicCurve where
   scheme : Scheme
   isHyperbolicCurve : scheme.IsHyperbolicCurve
 
 attribute [spec_decl] HyperbolicCurve.mk
 
-#spec_graph_of Scheme 2
+#spec_graph_of Scheme 1
