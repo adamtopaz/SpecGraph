@@ -58,7 +58,7 @@ function mkGraph({nodes, edges} : Graph) {
 
           gNode.attr("pointer-events", "fill");
 
-          gNode.on("mouseover", function(event) {
+          gNode.on("click", function(event) {
             event.stopPropagation();
             const nodeId = d3.select(this).attr("id");
             const node = nodeMap.get(nodeId);
@@ -93,7 +93,7 @@ function mkGraph({nodes, edges} : Graph) {
         });
 
         d3.select(graphRef.current)
-          .on("mouseover", () => {
+          .on("click", () => {
             const nodeInfo = d3.select(infoRef.current);
             nodeInfo.html('');
             nodeInfo.text("Node information will appear here.");
