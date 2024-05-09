@@ -4,8 +4,17 @@ universe u
 
 /--
 The *category* of schemes.
+Recall that a scheme $X = (X,\mathcal{O}_X)$ consists of the following data:
 
-$a + b = c$
+- A topological space $X$.
+- A sheaf of local rings $\mathcal{O}_X$ on $X$.
+
+such that $X$ is locally isomorphic to $\operatorname{Spec}(A)$ for some ring $A$.
+
+Recall that one has
+```math
+\operatorname{Spec}(A) = \{ \mathfrak{p} \ \text{prime} \}.
+```
 -/
 @[spec_decl]
 def Scheme : Type u := sorry
@@ -37,10 +46,11 @@ def etalePi1 : PointedScheme.{u} → ProfiniteGroup.{u} := sorry
 @[spec_decl]
 def Scheme.IsHyperbolicCurve (X : Scheme.{u}) : Prop := sorry
 
+
 structure HyperbolicCurve where
   scheme : Scheme
   isHyperbolicCurve : scheme.IsHyperbolicCurve
 
 attribute [spec_decl] HyperbolicCurve.mk
 
-#spec_graph_of Scheme 2
+#spec_graph
