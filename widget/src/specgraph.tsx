@@ -5,7 +5,9 @@ import { createRoot } from 'react-dom/client'
 import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
 import Markdown from 'react-markdown';
-import css from 'katex/dist/katex.min.css';
+
+// @ts-ignore
+import rehypeMathjax from 'rehype-mathjax'
 
 interface Node {
   id : string;
@@ -62,7 +64,7 @@ function mkGraph({nodes, dot} : Graph) {
                 const typeRoot = createRoot(typeDiv);
                 typeRoot.render(
                   // @ts-ignore
-                  <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+                  <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeMathjax]}>
                     {node.info}
                   </Markdown>
                 )
@@ -89,10 +91,6 @@ function mkGraph({nodes, dot} : Graph) {
   );
 }
 
-const styleSheet = new CSSStyleSheet()
-styleSheet.replace(css);
-
 export default (graph : Graph) => {
-  document.adoptedStyleSheets = [styleSheet];
   return mkGraph(graph)
 };
