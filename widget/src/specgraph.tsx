@@ -7,15 +7,6 @@ import remarkMath from 'remark-math'
 import Markdown from 'react-markdown';
 import css from 'katex/dist/katex.min.css';
 
-/*
-const defaultOptions: GraphvizOptions = {
-  fit: true,
-  height: 500,
-  width: 500,
-  zoom: false,
-};
-*/
-
 interface Node {
   id : string;
   name : string;
@@ -23,35 +14,19 @@ interface Node {
   docstring : string | null;
 }
 
-interface Edge {
-  source : string
-  target : string
-}
-
 interface Graph {
   nodes : Array<Node>
-  edges : Array<Edge>
+  dot : string
 }
 
-function mkDot({nodes, edges} : Graph) : string {
-  var out = "digraph {\n"
-  nodes.forEach((e) => 
-    out += `  ${e.id} [label=\"${e.name}\", id=${e.id}];\n`
-  );
-  edges.forEach((e) => 
-    out += `  ${e.source} -> ${e.target};\n`
-  );
-  return out + "\n}"
-}
-
-function mkGraph({nodes, edges} : Graph) {
+function mkGraph({nodes, dot} : Graph) {
   const nodeMap = new Map(nodes.map(node => [node.id, node]))
   const graphRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     graphviz(graphRef.current)
-      .renderDot(mkDot({nodes, edges}))
+      .renderDot(dot)
       .on("end", () => {
         d3.selectAll<SVGAElement, unknown>(".node").each(function () {
           const gNode = d3.select(this);
@@ -96,12 +71,10 @@ function mkGraph({nodes, edges} : Graph) {
           .on("click", () => {
             const nodeInfo = d3.select(infoRef.current);
             nodeInfo.html('');
-            nodeInfo.text("Node information will appear here.");
+            //nodeInfo.text("Node information will appear here.");
           });
       });
-  }, [nodes, edges]);
-
-  const test : string = "*Hello!* **there**"
+  }, [nodes, dot]);
 
   return (
     <div>

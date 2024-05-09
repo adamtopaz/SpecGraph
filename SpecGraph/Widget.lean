@@ -18,7 +18,7 @@ deriving ToJson, FromJson, Inhabited
 
 structure SpecGraphProps where
   nodes : Array Node
-  edges : Array Edge
+  dot : String
 deriving ToJson, FromJson, Inhabited
 
 @[widget_module]
@@ -27,23 +27,36 @@ def SpecGraph : Component SpecGraphProps where
 
 syntax (name := specGraphCmd) "#spec_graph " : command
 
+def mkNodes (nodes : HashSet Name) : MetaM (Array Node) :=
+  nodes.toArray.filterMapM fun nm => do
+    let env ← getEnv
+    let some c := env.find? nm | return none
+    return some {
+      id := s!"{hash nm}",
+      name := nm,
+      type := (← Meta.ppExpr c.type).pretty
+      docstring := ← findDocString? env nm
+    }
+
+def mkDot (graph : HashGraph Name) : MetaM String := do
+  let mut out := "digraph {\n"
+  let nodes ← mkNodes graph.nodes
+  for node in nodes do
+    out := out ++ s!"  {node.id} [label=\"{node.name}\", id={node.id}];\n"
+  for (a,b) in graph.edges do
+    out := out ++ s!"  {hash a} -> {hash b};\n"
+  return out ++ "}"
+
 open Elab Command Json in
 @[command_elab specGraphCmd]
 def elabSpecGraphCmd : CommandElab := fun
   | stx@`(#spec_graph) =>
     runTermElabM fun _ => do
       let graph ← specGraph
-      let mut nodes := #[]
-      let env ← getEnv
-      for n in graph.nodes do
-        let some c := env.find? n | continue
-        let ppTp ← Meta.ppExpr c.type
-        let docString? ← findDocString? env n
-        nodes := nodes.push { id := s!"{hash n}", name := n, type := s!"{ppTp}", docstring := docString? }
-      let mut edges := #[]
-      for (source, target) in graph.edges do
-        edges := edges.push { source := s!"{hash source}", target := s!"{hash target}" }
-      let ht : Html := <SpecGraph nodes={nodes} edges={edges}/>
+      let nodes ← mkNodes graph.nodes
+      let dot ← mkDot graph
+      IO.println dot
+      let ht : Html := <SpecGraph nodes={nodes} dot={dot}/>
       Widget.savePanelWidgetInfo (hash HtmlDisplayPanel.javascript)
         (return json% { html: $(← Server.rpcEncode ht) }) stx
   | stx => throwError "Unexpected syntax {stx}."
@@ -60,17 +73,10 @@ def elabSpecGraphOfCmd : CommandElab := fun
         | none => 5
         | some n => n.getNat
       let graph ← specGraphOf i gas
-      let mut nodes := #[]
-      let env ← getEnv
-      for n in graph.nodes do
-        let some c := env.find? n | continue
-        let ppTp ← Meta.ppExpr c.type
-        let docString? ← findDocString? env n
-        nodes := nodes.push { id := s!"{hash n}", name := n, type := s!"{ppTp}", docstring := docString? }
-      let mut edges := #[]
-      for (source, target) in graph.edges do
-        edges := edges.push { source := s!"{hash source}", target := s!"{hash target}" }
-      let ht : Html := <SpecGraph nodes={nodes} edges={edges}/>
+      let nodes ← mkNodes graph.nodes
+      let dot ← mkDot graph
+      IO.println dot
+      let ht : Html := <SpecGraph nodes={nodes} dot={dot}/>
       Widget.savePanelWidgetInfo (hash HtmlDisplayPanel.javascript)
         (return json% { html: $(← Server.rpcEncode ht) }) stx
   | stx => throwError "Unexpected syntax {stx}."
