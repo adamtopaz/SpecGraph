@@ -3,19 +3,44 @@ import SpecGraph.Widget
 universe u
 
 /--
-We introduce a natural number $a$, and set it equal to $0$.
+The *category* of schemes.
+
+$a + b = c$
 -/
 @[spec_decl]
-def a := 0
+def Scheme : Type u := sorry
 
 /--
-Now we introduce another natural number $b$,
-which is just the sum of $a$ and $0$.
+The category of pointed.
 -/
 @[spec_decl]
-def b := a + 0
+def PointedScheme : Type u := sorry
+
+/--
+We can associate a scheme to any pointed scheme.
+-/
+@[spec_decl]
+def PointedScheme.toScheme (X : PointedScheme.{u}) : Scheme.{u} := sorry
+
+/--
+The category of profinite groups.
+-/
+@[spec_decl]
+def ProfiniteGroup : Type u := sorry
+
+/--
+The etale fundamental group of a pointed Scheme.
+-/
+@[spec_decl]
+def etalePi1 : PointedScheme.{u} → ProfiniteGroup.{u} := sorry
 
 @[spec_decl]
-def c := b + a
+def Scheme.IsHyperbolicCurve (X : Scheme.{u}) : Prop := sorry
 
-#spec_graph_of a
+structure HyperbolicCurve where
+  scheme : Scheme
+  isHyperbolicCurve : scheme.IsHyperbolicCurve
+
+attribute [spec_decl] HyperbolicCurve.mk
+
+#spec_graph_of Scheme 2

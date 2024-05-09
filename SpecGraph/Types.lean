@@ -16,7 +16,7 @@ def insertNode (G : HashGraph α) (a : α) : HashGraph α where
 
 def insertEdge (G : HashGraph α) (a b : α) : HashGraph α where
   nodes := G.nodes.insertMany [a,b]
-  edges := G.edges.insert (a,b)
+  edges := if a == b then G.edges else G.edges.insert (a,b)
 
 def toDot (G : HashGraph α) [ToString α] : String := Id.run do
   let mut out := "digraph {\n"

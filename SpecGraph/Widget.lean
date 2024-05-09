@@ -23,7 +23,7 @@ deriving ToJson, FromJson, Inhabited
 
 @[widget_module]
 def SpecGraph : Component SpecGraphProps where
-  javascript := include_str ".." / "widget" / "dist" / "index.mjs"
+  javascript := include_str ".." / "build" / "js" / "specgraph.js"
 
 syntax (name := specGraphCmd) "#spec_graph " : command
 

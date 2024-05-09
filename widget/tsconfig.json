@@ -5,10 +5,11 @@
     "module": "esnext",
     "moduleResolution": "node",
     "sourceMap": false,
-    "outDir": "../.lake/build/js",
+    "outDir": "../build/js",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true
+    "strict": true,
+    "rootDir" : "src"
   }
 }
