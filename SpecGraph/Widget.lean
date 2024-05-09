@@ -43,7 +43,7 @@ def mkNodes (nodes : HashSet Name) : MetaM (Array Node) :=
       id := s!"{hash nm}",
       name := nm
       info := s!"\
-# {nm}
+# `{nm}`
 ```lean
 {nm} : {ppTp}
 ```

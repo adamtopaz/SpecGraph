@@ -54,4 +54,4 @@ structure HyperbolicCurve where
 
 attribute [spec_decl] HyperbolicCurve.mk
 
-#spec_graph_of Scheme 1
+#spec_graph_of Scheme 2

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as d3 from 'd3';
-import { graphviz } from 'd3-graphviz';
+import { graphviz, GraphvizOptions } from 'd3-graphviz';
 import { createRoot } from 'react-dom/client'
 import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
@@ -28,6 +28,22 @@ function mkGraph({nodes, dot} : Graph) {
     graphviz(graphRef.current)
       .renderDot(dot)
       .on("end", () => {
+
+        d3.select(graphRef.current).select('polygon').style("fill", "transparent");
+
+        d3.select(graphRef.current).selectAll('text').each(function () {
+          const tNode = d3.select(this);
+          tNode.style("fill", "var(--vscode-editor-foreground)");
+        });
+
+        d3.selectAll<SVGAElement, unknown>(".edge").each(function () {
+          const eNode = d3.select(this)
+          eNode.select("path").style("stroke","var(--vscode-editor-foreground)");
+          eNode.select("polygon")
+            .style("stroke","var(--vscode-editor-foreground)")
+            .style("fill","var(--vscode-editor-foreground)");
+        });
+
         d3.selectAll<SVGAElement, unknown>(".node").each(function () {
           const gNode = d3.select(this);
 
