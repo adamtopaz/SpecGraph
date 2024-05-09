@@ -11,6 +11,10 @@ structure Node where
   docstring : Option String
 deriving ToJson, FromJson, Inhabited
 
+def Node.usesSorry (node : Node) : CoreM Bool := do
+  let some c := (← getEnv).find? node.name | throwError s!"{node.name} not found in environment."
+  return c.getUsedConstantsAsSet.contains ``sorryAx
+
 structure Edge where
   source : String
   target : String
@@ -42,7 +46,8 @@ def mkDot (graph : HashGraph Name) : MetaM String := do
   let mut out := "digraph {\n"
   let nodes ← mkNodes graph.nodes
   for node in nodes do
-    out := out ++ s!"  {node.id} [label=\"{node.name}\", id={node.id}];\n"
+    let color : String := if ← node.usesSorry then "red" else "green"
+    out := out ++ s!"  {node.id} [label=\"{node.name}\", id={node.id}, color={color}];\n"
   for (a,b) in graph.edges do
     out := out ++ s!"  {hash a} -> {hash b};\n"
   return out ++ "}"
@@ -55,7 +60,6 @@ def elabSpecGraphCmd : CommandElab := fun
       let graph ← specGraph
       let nodes ← mkNodes graph.nodes
       let dot ← mkDot graph
-      IO.println dot
       let ht : Html := <SpecGraph nodes={nodes} dot={dot}/>
       Widget.savePanelWidgetInfo (hash HtmlDisplayPanel.javascript)
         (return json% { html: $(← Server.rpcEncode ht) }) stx
@@ -75,7 +79,6 @@ def elabSpecGraphOfCmd : CommandElab := fun
       let graph ← specGraphOf i gas
       let nodes ← mkNodes graph.nodes
       let dot ← mkDot graph
-      IO.println dot
       let ht : Html := <SpecGraph nodes={nodes} dot={dot}/>
       Widget.savePanelWidgetInfo (hash HtmlDisplayPanel.javascript)
         (return json% { html: $(← Server.rpcEncode ht) }) stx
