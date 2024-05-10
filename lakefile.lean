@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.35"
+require graph_widget from git "https://github.com/adamtopaz/graph_widget.git"
 
 package «SpecGraph» where
   -- add package configuration options here

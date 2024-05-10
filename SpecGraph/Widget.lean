@@ -1,17 +1,11 @@
-import ProofWidgets.Component.HtmlDisplay
+import GraphWidget
 import SpecGraph.Init
 
 open Lean ProofWidgets
 open scoped ProofWidgets.Jsx
 
-structure Node where
-  id : String
-  name : Name
-  info : String
-deriving ToJson, FromJson, Inhabited
-
-def Node.usesSorry (node : Node) : CoreM Bool := do
-  let some c := (← getEnv).find? node.name | throwError s!"{node.name} not found in environment."
+def Lean.Name.usesSorry (name : Name) : CoreM Bool := do
+  let some c := (← getEnv).find? name | throwError s!"{name} not found in environment."
   return c.getUsedConstantsAsSet.contains ``sorryAx
 
 structure Edge where
@@ -41,7 +35,7 @@ def mkNodes (nodes : HashSet Name) : MetaM (Array Node) :=
       | some doc => s!"\n---\n{doc}\n---\n"
     return some {
       id := s!"{hash nm}",
-      name := nm
+      --name := nm
       info := s!"\
 # `{nm}`
 ```lean
@@ -54,9 +48,9 @@ def mkNodes (nodes : HashSet Name) : MetaM (Array Node) :=
 def mkDot (graph : HashGraph Name) : MetaM String := do
   let mut out := "digraph {\n"
   let nodes ← mkNodes graph.nodes
-  for node in nodes do
-    let color : String := if ← node.usesSorry then "red" else "green"
-    out := out ++ s!"  {node.id} [label=\"{node.name}\", id={node.id}, color={color}];\n"
+  for (node, name) in nodes.zip graph.nodes.toArray do
+    let color : String := if ← name.usesSorry then "red" else "green"
+    out := out ++ s!"  {node.id} [label=\"{name}\", id={node.id}, color={color}];\n"
   for (a,b) in graph.edges do
     out := out ++ s!"  {hash a} -> {hash b};\n"
   return out ++ "}"
