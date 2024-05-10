@@ -22,7 +22,7 @@
   {"url": "https://github.com/adamtopaz/graph_widget.git",
    "type": "git",
    "subDir": null,
-   "rev": "a1345cdce8fb51f8ef87628ed41597200758fe00",
+   "rev": "2bb4ad1d966c3c0703245740a53489464bbb4853",
    "name": "graph_widget",
    "manifestFile": "lake-manifest.json",
    "inputRev": null,
