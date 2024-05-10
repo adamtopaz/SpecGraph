@@ -8,22 +8,6 @@ def Lean.Name.usesSorry (name : Name) : CoreM Bool := do
   let some c := (← getEnv).find? name | throwError s!"{name} not found in environment."
   return c.getUsedConstantsAsSet.contains ``sorryAx
 
-structure Edge where
-  source : String
-  target : String
-deriving ToJson, FromJson, Inhabited
-
-structure SpecGraphProps where
-  nodes : Array Node
-  dot : String
-deriving ToJson, FromJson, Inhabited
-
-@[widget_module]
-def SpecGraph : Component SpecGraphProps where
-  javascript := include_str ".." / "build" / "js" / "specgraph.js"
-
-syntax (name := specGraphCmd) "#spec_graph " : command
-
 def mkNodes (nodes : HashSet Name) : MetaM (Array Node) :=
   nodes.toArray.filterMapM fun nm => do
     let env ← getEnv
@@ -55,6 +39,8 @@ def mkDot (graph : HashGraph Name) : MetaM String := do
     out := out ++ s!"  {hash a} -> {hash b};\n"
   return out ++ "}"
 
+syntax (name := specGraphCmd) "#spec_graph " : command
+
 open Elab Command Json in
 @[command_elab specGraphCmd]
 def elabSpecGraphCmd : CommandElab := fun
@@ -63,7 +49,7 @@ def elabSpecGraphCmd : CommandElab := fun
       let graph ← specGraph
       let nodes ← mkNodes graph.nodes
       let dot ← mkDot graph
-      let ht : Html := <SpecGraph nodes={nodes} dot={dot}/>
+      let ht : Html := <Graph nodes={nodes} dot={dot}/>
       Widget.savePanelWidgetInfo (hash HtmlDisplayPanel.javascript)
         (return json% { html: $(← Server.rpcEncode ht) }) stx
   | stx => throwError "Unexpected syntax {stx}."
@@ -82,7 +68,7 @@ def elabSpecGraphOfCmd : CommandElab := fun
       let graph ← specGraphOf i gas
       let nodes ← mkNodes graph.nodes
       let dot ← mkDot graph
-      let ht : Html := <SpecGraph nodes={nodes} dot={dot}/>
+      let ht : Html := <Graph nodes={nodes} dot={dot}/>
       Widget.savePanelWidgetInfo (hash HtmlDisplayPanel.javascript)
         (return json% { html: $(← Server.rpcEncode ht) }) stx
   | stx => throwError "Unexpected syntax {stx}."
